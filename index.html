@@ -4,8 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>메모장</title>
-
   <style>
+    @font-face {
+  font-family: 'Escoredream';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-8Heavy.woff') format('woff');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Escoredream';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+  font-weight: normal;
+  font-display: swap;
+}
     /* ────────────────────────── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -171,9 +183,16 @@
     /* ────────────────────────── */
     .doc { display: none; padding: clamp(14px, 4vw, 22px); }
     .doc.on { display: block; }
-    .doc h1 { font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 600; }
-    .doc p  { color: var(--sub); }
-
+.doc h1 {
+  font-family: 'Escoredream', "Malgun Gothic", sans-serif;
+  font-size: clamp(1.3rem, 5vw, 2rem);
+  font-weight: 800; 
+}
+.doc p {
+  font-family: 'Escoredream', "Malgun Gothic", sans-serif;
+  font-weight: normal;
+  color: var(--sub);
+}
     #hero .doc { min-height: clamp(70px, 18vw, 130px); }
     #main .doc { min-height: clamp(170px, 46vw, 300px); }
 
@@ -247,7 +266,7 @@
         id: "hero",
         tabs: [
           { name: "崩坏3", title: "Honkai Impact 3rd", text: "Canon x OC" },
-          { name: "About", title: "쥐치",                   text: "성인 여성" }
+          { name: "About", title: "쥐치",                   text: "성인&nbsp;&nbsp;여성&nbsp;&nbsp;NCP&nbsp;&nbsp;극온리" }
         ]
       },
       {
