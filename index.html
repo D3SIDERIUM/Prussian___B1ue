@@ -212,11 +212,30 @@
       /* 탭: 글자가 잘리지 않게 고정 너비 + 가로 스크롤 */
       .tab-list { flex: 1; overflow-x: auto; scrollbar-width: none; }
       .tab-list::-webkit-scrollbar { display: none; }
-      .tab { flex: 1 1 0; width: auto; min-width: 72px; max-width: 112px; }   /* 탭이 3개여도 한 줄에 맞게 줄어듦 */
+      /* 선택 안 된 탭은 좁게(72px), 선택된 탭은 모두 같은 너비(120px)로 펼침 */
+      .tab {
+        flex: 0 1 auto;
+        width: 72px;
+        min-width: 48px;
+        padding: 0 8px;
+        transition: width .1s ease-out, padding .1s ease-out;
+      }
+      .tab em {                                  /* 저장 안 됨 점: 접힌 탭에서는 숨김 */
+        width: 0;
+        margin-left: -8px;                       /* gap(8px) 상쇄 */
+        opacity: 0;
+        transition: width .1s ease-out, margin-left .1s ease-out, opacity .1s ease-out;
+      }
+      .tab[aria-selected="true"] { flex-shrink: 0; width: 120px; padding: 0 12px; }
+      .tab[aria-selected="true"] em { width: 7px; margin-left: 0; opacity: 1; }
       .tab-add { flex: none; }
 
       /* 아이콘을 오른쪽 끝으로 */
       .right { margin-left: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tab, .tab em { transition: none; }
     }
   </style>
 </head>
