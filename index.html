@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>메모장</title>
+
+  <style>
+    /* ────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+    /* ────────────────────────── */
+      --side: clamp(16px, 8vw, 56px);
+      --gap:  clamp(16px, 7vw, 32px);
+
+      --bar:   #e9e9e9;
+      --paper: #fafafa;
+      --line:  #e0e0e0; 
+      --sub:   #5f5f5f;
+      --blue:  #0067c0;
+    }
+
+    body {
+      font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+      background: #dfe7f2;
+      color: #1b1b1b;
+      line-height: 1.6;
+    }
+
+    /* ────────────────────────── */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--gap) var(--side);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+      font-size: .85rem;
+      padding: clamp(24px, 8vw, 64px) 0 8px;
+    }
+
+    /* ────────────────────────── */
+    .win {
+      background: var(--paper);
+      border: 1px solid #c9c9c9;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+    }
+
+    /* ────────────────────────── */
+    .tabs {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 40px;
+      padding-left: 10px;
+      background: var(--bar);
+    }
+    .tab-list {
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      min-width: 0;
+      overflow: hidden;
+      padding-top: 6px;
+    }
+    .tab {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: clamp(96px, 22vw, 190px);
+      height: 100%;
+      min-width: 0;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 8px 8px 0 0;
+      background: none;
+      font: inherit;
+      font-size: .82rem;
+      color: #333;
+      cursor: pointer;
+    }
+    .tab span {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tab em {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #7a7a7a;
+    }
+    .tab[aria-selected="true"] { background: var(--paper); }
+    .tab:hover:not([aria-selected="true"]) { background: #f1f1f1; }
+
+    .tab + .tab:not([aria-selected="true"])::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 25%;
+      height: 50%;
+      border-left: 1px solid #c8c8c8;
+    }
+
+    .tab-add {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 100%;
+      font-size: 1.1rem;
+      color: #444;
+    }
+
+    .controls {
+      display: flex;
+      align-self: flex-start;
+      height: 32px;
+      color: #444;
+    }
+    .controls i {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      font-style: normal;
+      font-size: .85rem;
+    }
+    .controls i:hover { background: #dcdcdc; }
+    .controls i:last-child:hover { background: #c42b1c; color: #fff; }
+
+    /* ────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 37px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: .9rem;
+    }
+    .toolbar u {
+      text-decoration: none;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+    .toolbar u:hover { background: #ececec; }
+
+    .menu   { display: flex; gap: 2px; }
+    .format { display: flex; align-items: center; gap: 2px; margin: 0 auto; color: #333; }
+    .format u { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; }
+    .format .chevron { flex: none; }
+    .right  { display: flex; align-items: center; gap: 4px; }
+    .right svg { display: block; }
+
+    .has-badge { position: relative; }
+    .has-badge::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    /* ────────────────────────── */
+    .doc { display: none; padding: clamp(14px, 4vw, 22px); }
+    .doc.on { display: block; }
+    .doc h1 { font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 600; }
+    .doc p  { color: var(--sub); }
+
+    #hero .doc { min-height: clamp(70px, 18vw, 130px); }   /* 위쪽 박스 높이 */
+    #main .doc { min-height: clamp(170px, 46vw, 300px); }  /* 큰 박스 높이 */
+
+    /* ────────────────────────── */
+    .status {
+      display: flex;
+      align-items: center;
+      height: 34px;
+      border-top: 1px solid var(--line);
+      font-size: .75rem;
+      color: var(--sub);
+    }
+    .status span {
+      padding: 0 16px;
+      border-left: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .status .pos,
+    .status .count { border: 0; }
+    .status .count { margin-right: auto; }
+
+    /* ────────────────────────── */
+    @media (max-width: 700px) {
+      .format, .status .extra { display: none; }
+      .controls i { width: 38px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page" id="page">
+  </main>
+
+  <script>
+    /* ────────────────────────── */
+    const windows = [
+      {
+        id: "hero",
+        tabs: [
+          { name: "崩坏3", title: "Honkai Impact 3rd", text: "Canon x OC" },
+          { name: "About", title: "쥐치",                   text: "자기소개를 적어주세요." }
+        ]
+      },
+      {
+        id: "main",
+        tabs: [
+          { name: "NG", title: "이하 이유 불문 블락", text: "여기에 본문을 적습니다." },
+          { name: "Warning", title: "목록",     text: "항목들을 정리해 보세요." },
+          { name: "List", title: "1T1D",     text: "자유롭게 기록하세요." }
+        ]
+      }
+    ];
+
+    /* ────────────────────────── */
+    const svg = (paths) =>
+      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+
+    const ICON = {
+      notepad: `<svg width="16" height="16" viewBox="0 0 16 16">
+                  <rect x="3" y="1" width="10" height="14" rx="2" fill="#2aa0d8"/>
+                  <path d="M5 5h6M5 8h6M5 11h4" stroke="#fff" stroke-width="1.2"/>
+                </svg>`,
+      chevron: `<svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"
+                     stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3.5l3 3 3-3"/>
+                </svg>`,
+      megaphone: svg('<path d="M3 10v4h3l8 4V6L6 10H3zM18 9a4 4 0 010 6"/>'),
+      gear:      svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>')
+    };
+
+    /* ────────────────────────── */
+    const tabsHTML = (tabs) => `
+      <div class="tabs">
+        <div class="tab-list">
+          ${tabs.map(t => `
+            <button class="tab" aria-selected="false">
+              ${ICON.notepad}<span>${t.name}</span><em></em>
+            </button>`).join("")}
+          <div class="tab-add">+</div>
+        </div>
+        <div class="controls"><i>—</i><i>☐</i><i>✕</i></div>
+      </div>`;
+
+    const toolbarHTML = `
+      <div class="toolbar">
+        <div class="menu"><u>파일</u><u>편집</u><u>보기</u></div>
+        <div class="format">
+          <u>H1 ${ICON.chevron}</u><u>☰ ${ICON.chevron}</u><u><b>B</b></u><u><i>I</i></u><u><s>S</s></u><u>🔗︎</u><u>⋯</u>
+        </div>
+        <div class="right">
+          <u class="has-badge">${ICON.megaphone}</u><u>${ICON.gear}</u>
+        </div>
+      </div>`;
+
+    const docsHTML = (tabs) => tabs.map(t => `
+      <div class="doc"><h1>${t.title}</h1><p>${t.text}</p></div>`).join("");
+
+    const statusHTML = `
+      <div class="status">
+        <span class="pos"></span>
+        <span class="count"></span>
+        <span class="extra">일반 텍스트</span>
+        <span class="extra">100%</span>
+        <span class="extra">Windows (CRLF)</span>
+        <span>UTF-8</span>
+      </div>`;
+
+    /* ────────────────────────── */
+    function createWindow(config) {
+      const win = document.createElement("section");
+      win.className = "win";
+      win.id = config.id;
+      win.innerHTML = tabsHTML(config.tabs) + toolbarHTML + docsHTML(config.tabs) + statusHTML;
+
+      const tabs  = win.querySelectorAll(".tab");
+      const docs  = win.querySelectorAll(".doc");
+      const pos   = win.querySelector(".pos");
+      const count = win.querySelector(".count");
+
+      function selectTab(index) {
+        tabs.forEach((tab, i) => tab.setAttribute("aria-selected", i === index));
+        docs.forEach((doc, i) => doc.classList.toggle("on", i === index));
+
+        const length = docs[index].textContent.length;
+        pos.textContent   = `줄 1, 열 ${length + 1}`;
+        count.textContent = `${length}자`;
+      }
+
+      tabs.forEach((tab, i) => tab.addEventListener("click", () => selectTab(i)));
+      selectTab(0);
+      return win;
+    }
+
+    /* ────────────────────────── */
+    const page   = document.getElementById("page");
+    const footer = page.querySelector("footer");
+    windows.forEach(config => page.insertBefore(createWindow(config), footer));
+  </script>
+</body>
+</html>
