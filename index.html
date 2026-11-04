@@ -38,13 +38,6 @@
       gap: var(--gap);
     }
 
-    footer {
-      text-align: center;
-      color: #666;
-      font-size: .85rem;
-      padding: clamp(24px, 8vw, 64px) 0 8px;
-    }
-
     /* ────────────────────────── */
     .win {
       background: var(--paper);
@@ -202,10 +195,27 @@
     .status .count { border: 0; }
     .status .count { margin-right: auto; }
 
-    /* ────────────────────────── */
+    /* ────────────────────────── 모바일 */
     @media (max-width: 700px) {
-      .format, .status .extra { display: none; }
-      .controls i { width: 38px; }
+      /* 화면을 꽉 채우되 가장자리 여백은 유지 */
+      .page { min-height: 100dvh; padding: 10px 12px; gap: 10px; }
+      .win  { box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+
+      /* 큰 박스가 남는 높이를 채움 */
+      #main { flex: 1; display: flex; flex-direction: column; }
+      #main .doc.on { flex: 1; }
+      #hero .doc, #main .doc { min-height: 0; }
+      #hero .doc { padding-block: 28px; }
+
+      .format, .status .extra, .controls { display: none; }
+
+      /* 탭: 글자가 잘리지 않게 고정 너비 + 가로 스크롤 */
+      .tab-list { flex: 1; overflow-x: auto; scrollbar-width: none; }
+      .tab-list::-webkit-scrollbar { display: none; }
+      .tab { flex: none; width: 112px; }
+
+      /* 아이콘을 오른쪽 끝으로 */
+      .right { margin-left: auto; }
     }
   </style>
 </head>
@@ -316,9 +326,8 @@
     }
 
     /* ────────────────────────── */
-    const page   = document.getElementById("page");
-    const footer = page.querySelector("footer");
-    windows.forEach(config => page.insertBefore(createWindow(config), footer));
+    const page = document.getElementById("page");
+    windows.forEach(config => page.appendChild(createWindow(config)));
   </script>
 </body>
 </html>
