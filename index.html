@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>&nbsp;</title>
+  <title>메모장</title>
 
   <style>
     /* ────────────────────────── */
@@ -27,6 +27,7 @@
       color: #1b1b1b;
       line-height: 1.6;
     }
+
     /* ────────────────────────── */
     .page {
       max-width: 960px;
@@ -36,6 +37,7 @@
       flex-direction: column;
       gap: var(--gap);
     }
+
     /* ────────────────────────── */
     .win {
       background: var(--paper);
@@ -44,6 +46,7 @@
       overflow: hidden;
       box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
     }
+
     /* ────────────────────────── */
     .tabs {
       display: flex;
@@ -128,6 +131,7 @@
     }
     .controls i:hover { background: #dcdcdc; }
     .controls i:last-child:hover { background: #c42b1c; color: #fff; }
+
     /* ────────────────────────── */
     .toolbar {
       display: flex;
@@ -163,14 +167,16 @@
       border-radius: 50%;
       background: var(--blue);
     }
+
     /* ────────────────────────── */
     .doc { display: none; padding: clamp(14px, 4vw, 22px); }
     .doc.on { display: block; }
     .doc h1 { font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 600; }
     .doc p  { color: var(--sub); }
 
-    #hero .doc { min-height: clamp(70px, 18vw, 130px); }
-    #main .doc { min-height: clamp(170px, 46vw, 300px); }
+    #hero .doc { min-height: clamp(70px, 18vw, 130px); }   /* 위쪽 박스 높이 */
+    #main .doc { min-height: clamp(170px, 46vw, 300px); }  /* 큰 박스 높이 */
+
     /* ────────────────────────── */
     .status {
       display: flex;
@@ -188,20 +194,28 @@
     .status .pos,
     .status .count { border: 0; }
     .status .count { margin-right: auto; }
-    /* ────────────────────────── */
+
+    /* ────────────────────────── 모바일 */
     @media (max-width: 700px) {
+      /* 화면을 꽉 채우되 가장자리 여백은 유지 */
       .page { min-height: 100dvh; padding: 10px 12px; gap: 10px; }
       .win  { box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+
+      /* 큰 박스가 남는 높이를 채움 */
       #main { flex: 1; display: flex; flex-direction: column; }
       #main .doc.on { flex: 1; }
       #hero .doc, #main .doc { min-height: 0; }
       #hero .doc { padding-block: 28px; }
 
       .format, .status .extra, .controls { display: none; }
+
+      /* 탭: 글자가 잘리지 않게 고정 너비 + 가로 스크롤 */
       .tab-list { flex: 1; overflow-x: auto; scrollbar-width: none; }
       .tab-list::-webkit-scrollbar { display: none; }
-      .tab { flex: none; width: 112px; }
+      .tab { flex: 1 1 0; width: auto; min-width: 72px; max-width: 112px; }   /* 탭이 3개여도 한 줄에 맞게 줄어듦 */
+      .tab-add { flex: none; }
 
+      /* 아이콘을 오른쪽 끝으로 */
       .right { margin-left: auto; }
     }
   </style>
@@ -210,6 +224,7 @@
 <body>
   <main class="page" id="page">
   </main>
+
   <script>
     /* ────────────────────────── */
     const windows = [
@@ -223,7 +238,7 @@
       {
         id: "main",
         tabs: [
-          { name: "NG", title: "이하 이유 불문 블락", text: "이에 관해 어떠한 컨택도 하지 마세요." },
+          { name: "NG", title: "이하 이유 불문 블락", text: "여기에 본문을 적습니다." },
           { name: "Warning", title: "목록",     text: "항목들을 정리해 보세요." },
           { name: "List", title: "1T1D",     text: "자유롭게 기록하세요." }
         ]
