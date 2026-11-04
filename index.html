@@ -37,7 +37,7 @@
       font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
       background: #dfe7f2;
       color: #1b1b1b;
-      line-height: 1.6;
+      line-height: 1.2;
     }
 
     /* ────────────────────────── */
@@ -193,6 +193,58 @@
   font-weight: normal;
   color: var(--sub);
 }
+.doc p.note {
+  width: 100%;
+  margin-top: 6px;
+  color: #292929;
+  line-height: 1.7;
+}
+.fnr {
+  color: #0070d1;
+  font-size: 11px;
+  font-family: 'Escoredream', "Malgun Gothic", sans-serif;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: super;
+  line-height: 0;
+  position: relative;
+  top: -1px;
+}
+.fnp {
+  position: absolute;
+  background: #fff;
+  color: #000;
+  padding: 10px 13px;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Escoredream', "Malgun Gothic", sans-serif;
+  font-weight: normal;
+  line-height: 1.5;
+  width: max-content;
+  max-width: min(300px, 85vw);
+  box-sizing: border-box;
+  text-align: left;
+  z-index: 9999;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  display: none;
+}
+.fn .fnp { display: none !important; }
+.doc.side.on {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 24px;
+}
+.doc.side p {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 1.5em;
+}
     #hero .doc { min-height: clamp(70px, 18vw, 130px); }
     #main .doc { min-height: clamp(170px, 46vw, 300px); }
 
@@ -222,7 +274,6 @@
       #main { flex: 1; display: flex; flex-direction: column; }
       #main .doc.on { flex: 1; }
       #hero .doc, #main .doc { min-height: 0; }
-      #hero .doc { padding-block: 28px; }
 
       .format, .status .extra, .controls { display: none; }
 
@@ -261,20 +312,23 @@
 
   <script>
     /* ────────────────────────── */
+    const fn = (mark, content) =>
+  `<span class="fn"><span class="fnr">${mark}</span><span class="fnp">${content}</span></span>`;
     const windows = [
       {
         id: "hero",
         tabs: [
-          { name: "崩坏3", title: "Honkai Impact 3rd", text: "Canon x OC" },
-          { name: "About", title: "쥐치",                   text: "성인&nbsp;&nbsp;여성&nbsp;&nbsp;NCP&nbsp;&nbsp;극온리" }
+          { name: "崩坏3", title: "Honkai Impact 3rd", text: "Canon x OC", note: "</br><i>May all the beauty be blessed!</i>"},
+          { name: "About Me", title: "쥐치", items: ["성인", "여성", "NCP", "극온리"], note: "</br>HoYoverse의 각종 논란을 인지하고 있으며 절대 옹호하지 않습니다." }
         ]
       },
       {
         id: "main",
         tabs: [
-          { name: "NG", title: "이하 이유 불문 블락", text: "-" },
-          { name: "Warning", title: "⚠",     text: "-" },
-          { name: "List", title: "1T1D",     text: "DM 주세요" }
+          { name: "NG", title: "이하 이유 불문 블락", text: "재연결 X", note: "</br>클라이언트 변조 요소 (리)트윗</br>엘리시아 CP, 겹드림</br>엘리시아=키레네 동일인 취급</br>플레이어블 출시 예정 캐릭터 드림</br>드림캐 무기 명함 선택 보유(종결x)</br>남초 커뮤니티 드립"  },
+          
+          { name: "Warning", title: "⚠",     text: " ", note: "</br>HoYoverse 쉐도우 복싱" + fn("[1]", "업데이트, (온)오프라인 행사, 스타시스템, 유출 ") + "多" + "</br>키레네 드림은 연결이 어렵습니다."},
+          { name: "List", title: "1T1D",     text: "리스트 추가는 DM 주세요", note: "</br>崩坏3&nbsp;&nbsp;레일라</br>銀魂&nbsp;&nbsp; 사카타 긴토키</br>文スト&nbsp;&nbsp;나카하라 츄야</br>ツイステ&nbsp;&nbsp;플로이드 리치" }
         ]
       }
     ];
@@ -320,10 +374,11 @@
           <u class="has-badge">${ICON.megaphone}</u><u>${ICON.gear}</u>
         </div>
       </div>`;
-
-    const docsHTML = (tabs) => tabs.map(t => `
-      <div class="doc"><h1>${t.title}</h1><p>${t.text}</p></div>`).join("");
-
+const noteHTML = (t) => t.note ? `<p class="note">${t.note}</p>` : "";
+const docsHTML = (tabs) => tabs.map(t => t.items
+  ? `<div class="doc side"><h1>${t.title}</h1><p>${t.items.map(i => `<span>${i}</span>`).join("")}</p>${noteHTML(t)}</div>`
+  : `<div class="doc"><h1>${t.title}</h1><p>${t.text}</p>${noteHTML(t)}</div>`).join("");
+  
     const statusHTML = `
       <div class="status">
         <span class="pos"></span>
@@ -350,7 +405,10 @@
         tabs.forEach((tab, i) => tab.setAttribute("aria-selected", i === index));
         docs.forEach((doc, i) => doc.classList.toggle("on", i === index));
 
-        const length = docs[index].textContent.length;
+        const clone = docs[index].cloneNode(true);
+clone.querySelectorAll(".fn").forEach((n) => n.remove());
+const length = clone.textContent.length;
+
         pos.textContent   = `줄 1, 열 ${length + 1}`;
         count.textContent = `${length}자`;
       }
@@ -359,8 +417,77 @@
       selectTab(0);
       return win;
     }
+const popup = document.createElement("div");
+popup.className = "fnp";
+document.body.appendChild(popup);
 
-    /* ────────────────────────── */
+function fitWidth(el) {
+  el.style.width = "";
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const rects = range.getClientRects();
+  let minL = Infinity, maxR = -Infinity;
+  for (const r of rects) {
+    if (r.width === 0) continue;
+    minL = Math.min(minL, r.left);
+    maxR = Math.max(maxR, r.right);
+  }
+  if (minL === Infinity) return;
+  const cs = getComputedStyle(el);
+  const extra = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+              + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+  el.style.width = Math.ceil(maxR - minL + extra) + 1 + "px";
+}
+
+function showPopup(source, trigger) {
+  popup.innerHTML = source.innerHTML;
+  popup._source = source;
+  popup.style.display = "block";
+  popup.style.position = "fixed";
+  popup.style.bottom = "auto";
+  popup.style.transform = "none";
+  fitWidth(popup);
+
+  const r = trigger.getBoundingClientRect();
+  const pw = popup.offsetWidth, ph = popup.offsetHeight, m = 8;
+  let left = r.left + r.width / 2 - pw / 2;
+  let top = r.top - ph - m;
+
+  if (left < m) left = m;
+  if (left + pw > window.innerWidth - m) left = window.innerWidth - m - pw;
+  if (top < m) top = r.bottom + m;
+
+  popup.style.left = left + "px";
+  popup.style.top = top + "px";
+}
+
+function hidePopup() {
+  popup.style.display = "none";
+  popup._source = null;
+}
+
+document.addEventListener("click", (e) => {
+  const ref = e.target.closest(".fnr");
+  if (!ref) { hidePopup(); return; }
+  const source = ref.parentElement.querySelector(".fnp");
+  const isOpen = popup.style.display === "block" && popup._source === source;
+  hidePopup();
+  if (!isOpen) showPopup(source, ref);
+  e.stopPropagation();
+});
+
+document.addEventListener("mouseover", (e) => {
+  const ref = e.target.closest(".fnr");
+  if (ref && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    showPopup(ref.parentElement.querySelector(".fnp"), ref);
+  }
+});
+document.addEventListener("mouseout", (e) => {
+  if (e.target.closest(".fnr")) hidePopup();
+});
+
+window.addEventListener("scroll", hidePopup, { passive: true });
+document.addEventListener("touchmove", hidePopup, { passive: true });
     const page = document.getElementById("page");
     windows.forEach(config => page.appendChild(createWindow(config)));
   </script>
