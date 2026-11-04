@@ -174,8 +174,8 @@
     .doc h1 { font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 600; }
     .doc p  { color: var(--sub); }
 
-    #hero .doc { min-height: clamp(70px, 18vw, 130px); }   /* 위쪽 박스 높이 */
-    #main .doc { min-height: clamp(170px, 46vw, 300px); }  /* 큰 박스 높이 */
+    #hero .doc { min-height: clamp(70px, 18vw, 130px); }
+    #main .doc { min-height: clamp(170px, 46vw, 300px); }
 
     /* ────────────────────────── */
     .status {
@@ -195,13 +195,11 @@
     .status .count { border: 0; }
     .status .count { margin-right: auto; }
 
-    /* ────────────────────────── 모바일 */
+    /* ────────────────────────── */
     @media (max-width: 700px) {
-      /* 화면을 꽉 채우되 가장자리 여백은 유지 */
       .page { min-height: 100dvh; padding: 10px 12px; gap: 10px; }
       .win  { box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
 
-      /* 큰 박스가 남는 높이를 채움 */
       #main { flex: 1; display: flex; flex-direction: column; }
       #main .doc.on { flex: 1; }
       #hero .doc, #main .doc { min-height: 0; }
@@ -209,10 +207,8 @@
 
       .format, .status .extra, .controls { display: none; }
 
-      /* 탭: 글자가 잘리지 않게 고정 너비 + 가로 스크롤 */
       .tab-list { flex: 1; overflow-x: auto; scrollbar-width: none; }
       .tab-list::-webkit-scrollbar { display: none; }
-      /* 선택 안 된 탭은 좁게(72px), 선택된 탭은 모두 같은 너비(120px)로 펼침 */
       .tab {
         flex: 0 1 auto;
         width: 72px;
@@ -220,9 +216,9 @@
         padding: 0 8px;
         transition: width .1s ease-out, padding .1s ease-out;
       }
-      .tab em {                                  /* 저장 안 됨 점: 접힌 탭에서는 숨김 */
+      .tab em {
         width: 0;
-        margin-left: -8px;                       /* gap(8px) 상쇄 */
+        margin-left: -8px;
         opacity: 0;
         transition: width .1s ease-out, margin-left .1s ease-out, opacity .1s ease-out;
       }
@@ -230,7 +226,7 @@
       .tab[aria-selected="true"] em { width: 7px; margin-left: 0; opacity: 1; }
       .tab-add { flex: none; }
 
-      /* 아이콘을 오른쪽 끝으로 */
+    /* ────────────────────────── */
       .right { margin-left: auto; }
     }
 
@@ -251,15 +247,15 @@
         id: "hero",
         tabs: [
           { name: "崩坏3", title: "Honkai Impact 3rd", text: "Canon x OC" },
-          { name: "About", title: "쥐치",                   text: "자기소개를 적어주세요." }
+          { name: "About", title: "쥐치",                   text: "성인 여성" }
         ]
       },
       {
         id: "main",
         tabs: [
-          { name: "NG", title: "이하 이유 불문 블락", text: "여기에 본문을 적습니다." },
-          { name: "Warning", title: "목록",     text: "항목들을 정리해 보세요." },
-          { name: "List", title: "1T1D",     text: "자유롭게 기록하세요." }
+          { name: "NG", title: "이하 이유 불문 블락", text: "-" },
+          { name: "Warning", title: "⚠",     text: "-" },
+          { name: "List", title: "1T1D",     text: "DM 주세요" }
         ]
       }
     ];
